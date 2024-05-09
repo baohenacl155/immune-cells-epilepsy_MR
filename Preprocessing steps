@@ -11,7 +11,7 @@ library(openxlsx)
 FileNames <- list.files(paste0(getwd()), pattern=".gz")
 exp_dat_ids <- FileNames
 exps <- FileNames
-x <- fread("ieu-b-8.csv")
+x <- fread("immune cells.csv")
 Phenotype <- x[,1]
 
 # Create a folder called "mendelian test" where the preprocessing data files will be automatically saved.
@@ -33,3 +33,5 @@ for (qaq in 1:length(exp_dat_ids)) { #
   d2 <- subset(d3, d3$pval < 1e-5)
   fwrite(d3, paste0("mendelian test/", FileNames[qaq]), sep=",", col.names = T, row.names = F, quote = F)
 }
+
+
