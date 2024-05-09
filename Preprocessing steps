@@ -1,0 +1,35 @@
+# Load the packages you need to use, if you don't have them installed, you need to install them in advance.
+library(TwoSampleMR)
+library(data.table)
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(ieugwasr)
+library(openxlsx)
+
+# Read the GWAS data files of the exposure factors, here you need to put them under the working directory you set up.The dataset is accessible for download from the GWAS catalogue under the accession numbers GCST0001391–GCST0002121.
+FileNames <- list.files(paste0(getwd()), pattern=".gz")
+exp_dat_ids <- FileNames
+exps <- FileNames
+x <- fread("ieu-b-8.csv")
+Phenotype <- x[,1]
+
+# Create a folder called "mendelian test" where the preprocessing data files will be automatically saved.
+dir.create(path = "mendelian test") 
+
+# The following code is cyclic and does not require any changes 
+for (qaq in 1:length(exp_dat_ids)) { # 
+  exp_dat_id <- exp_dat_ids[qaq]
+  exp <- exps[qaq]
+  
+  d3 <- try(fread(paste0(getwd(),"/",FileNames[qaq]), fill=TRUE), silent = T)
+  d3$chr_pos <- paste(d3$chromosome, d3$base_pair_location, sep = ":") 
+  #head(d3)
+  d3$Phenotype = Phenotype[qaq]
+  
+  colnames(d3) <- c("chr","pos","effect_allele","other_allele","samplesize","maf","eaf","beta","se","pval","SNP","Phenotype")
+  
+  fwrite(d3, paste0(FileNames[qaq]), sep=",", col.names = T, row.names = F, quote = F)
+  d2 <- subset(d3, d3$pval < 1e-5)
+  fwrite(d3, paste0("mendelian test/", FileNames[qaq]), sep=",", col.names = T, row.names = F, quote = F)
+}
